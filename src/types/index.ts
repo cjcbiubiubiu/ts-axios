@@ -21,7 +21,8 @@ export interface IAxiosRequestConfig {
   data?: any;
   params?: any;
   headers?: any;
-  responseType?: XMLHttpRequestResponseType
+  responseType?: XMLHttpRequestResponseType;
+  timeout?: number;
 }
 
 export interface IAxiosResponse {
@@ -33,6 +34,14 @@ export interface IAxiosResponse {
   request: any;
 }
 
-export interface IAxiosPromise extends Promise<IAxiosResponse> {
+// 创建一个继承Promise类的接口，并且规定参数类型为IAxiosResponse
+export interface IAxiosPromise extends Promise<IAxiosResponse> {}
 
+// 创建一个继承Error类的接口
+export interface IAxiosError extends Error {
+  isAxiosError: boolean
+  config: IAxiosRequestConfig
+  code?: string | null
+  request?: any
+  response?: IAxiosResponse
 }

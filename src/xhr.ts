@@ -55,12 +55,22 @@ export default function xhr(config: IAxiosRequestConfig): IAxiosPromise {
 
     // 处理错误事件
     request.onerror = function () {
-      reject(new Error("Network Error"));
+      // 不需要传递response，因为请求根本没有返回
+      reject(createError("Network Error", config, null, request));
     };
 
     // 处理超时事件
     request.ontimeout = function () {
-      reject(new Error(`Timeout of ${timeout} ms exceeded`));
+      // 不需要传递response，因为请求根本没有返回
+      // ECONNABORTED用在网络用语中，通常表示请求被终止
+      reject(
+        createError(
+          `Timeout of ${timeout} ms exceeded`,
+          config,
+          "ECONNABORTED",
+          request
+        )
+      );
     };
 
     Object.keys(headers).forEach((name) => {
@@ -79,7 +89,15 @@ export default function xhr(config: IAxiosRequestConfig): IAxiosPromise {
       if (response.status >= 200 && response.status < 300) {
         resolve(response);
       } else {
-        reject(new Error(`Request failed with status ${response.status}`));
+        reject(
+          createError(
+            `Request failed with status ${response.status}`,
+            config,
+            null,
+            request,
+            response
+          )
+        );
       }
     }
   });

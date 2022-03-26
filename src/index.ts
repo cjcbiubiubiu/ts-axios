@@ -1,47 +1,10 @@
-import { IAxiosRequestConfig, IAxiosPromise, IAxiosResponse } from "./types";
-import xhr from "./xhr";
-import { buildURL } from "./helpers/url";
-import { transformRequest, transformResponse } from "./helpers/data";
-import { processHeaders } from "./helpers/headers";
+import axios from "./axios";
 
-function axios(config: IAxiosRequestConfig): IAxiosPromise {
-  processConfig(config);
-  return xhr(config).then((res) => {
-    // 将返回内容为字符串的数据转化为对象
-    return transformResponseData(res);
-  });
-}
-
-// 处理传入配置，实际上是处理url
-function processConfig(config: IAxiosRequestConfig): void {
-  config.url = transformURL(config);
-  /**
-   * 要在处理data前先处理headers
-   * 因为如果先处理data，那么data转换为了字符串以后就无法在headers方法里面判断其为普通对象了
-   * 就无法进判断处理headers
-   */
-  config.headers = transformHeaders(config);
-  config.data = transformRequestData(config);
-}
-
-function transformURL(config: IAxiosRequestConfig): string {
-  const { url, params } = config;
-  return buildURL(url, params);
-}
-
-function transformRequestData(config: IAxiosRequestConfig): any {
-  return transformRequest(config.data);
-}
-
-function transformHeaders(config: IAxiosRequestConfig): any {
-  const { headers = {}, data } = config;
-  return processHeaders(headers, data);
-}
-
-function transformResponseData(res: IAxiosResponse): IAxiosResponse {
-  res.data = transformResponse(res.data);
-
-  return res;
-}
+//
+/**
+ * 导出所有定义的类型，以便外界使用
+ * 比如调用axios的时候，.catch(e=> {})一个错误，但是这个e的类型是无法被ts推断出来的，所以需要手动给它添加类型，但是类型是定义在axios内部的，无法获取，因此这里导出定义的类型，外界就可以手动添加参数的类型
+ */
+export * from './types'
 
 export default axios;
