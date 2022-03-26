@@ -1,12 +1,15 @@
-import { IAxiosRequestConfig } from "./types";
+import { IAxiosRequestConfig, IAxiosPromise, IAxiosResponse } from "./types";
 import xhr from "./xhr";
 import { buildURL } from "./helpers/url";
-import { transformRequest } from "./helpers/data";
+import { transformRequest, transformResponse } from "./helpers/data";
 import { processHeaders } from "./helpers/headers";
 
-function axios(config: IAxiosRequestConfig): void {
+function axios(config: IAxiosRequestConfig): IAxiosPromise {
   processConfig(config);
-  xhr(config);
+  return xhr(config).then((res) => {
+    // 将返回内容为字符串的数据转化为对象
+    return transformResponseData(res);
+  });
 }
 
 // 处理传入配置，实际上是处理url
@@ -33,6 +36,12 @@ function transformRequestData(config: IAxiosRequestConfig): any {
 function transformHeaders(config: IAxiosRequestConfig): any {
   const { headers = {}, data } = config;
   return processHeaders(headers, data);
+}
+
+function transformResponseData(res: IAxiosResponse): IAxiosResponse {
+  res.data = transformResponse(res.data);
+
+  return res;
 }
 
 export default axios;

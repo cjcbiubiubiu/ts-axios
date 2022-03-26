@@ -28,5 +28,30 @@ export function processHeaders(headers: any, data: any): any {
     }
   }
 
-  return headers
+  return headers;
+}
+
+export function parseHeaders(headers: string): any {
+  let parsed = Object.create(null);
+  if (!headers) {
+    return parsed;
+  }
+
+  // 以每一行进行分割
+  headers.split("\r\n").forEach((line) => {
+    // 以:进行分割然后结构赋值到新的数组中
+    // 比如 a:1 则key为a，val为1
+    let [key, val] = line.split(":");
+    key = key.trim().toLowerCase();
+    // key为空则跳到下次循环
+    if (!key) {
+      return;
+    }
+    if (val) {
+      val = val.trim();
+    }
+    parsed[key] = val;
+  });
+
+  return parsed;
 }
