@@ -25,8 +25,8 @@ export interface IAxiosRequestConfig {
   timeout?: number;
 }
 
-export interface IAxiosResponse {
-  data: any;
+export interface IAxiosResponse<T=any> {
+  data: T;
   status: number;
   statusText: string;
   headers: any;
@@ -35,7 +35,8 @@ export interface IAxiosResponse {
 }
 
 // 创建一个继承Promise类的接口，并且规定参数类型为IAxiosResponse
-export interface IAxiosPromise extends Promise<IAxiosResponse> {}
+// 接收类型T，并且传入IAxiosResponse，类似属性传递--7.5
+export interface IAxiosPromise<T=any> extends Promise<IAxiosResponse<T>> {}
 
 // 创建一个继承Error类的接口
 export interface IAxiosError extends Error {
@@ -47,19 +48,19 @@ export interface IAxiosError extends Error {
 }
 
 export interface IAxios {
-  request(config: IAxiosRequestConfig): IAxiosPromise
-  get(url: string, config?: IAxiosRequestConfig): IAxiosPromise
-  delete(url: string, config?: IAxiosRequestConfig): IAxiosPromise
-  head(url: string, config?: IAxiosRequestConfig): IAxiosPromise
-  options(url: string, config?: IAxiosRequestConfig): IAxiosPromise
-  post(url: string, data?: any, config?: IAxiosRequestConfig): IAxiosPromise
-  put(url: string, data?: any, config?: IAxiosRequestConfig): IAxiosPromise
-  patch(url: string, data?: any, config?: IAxiosRequestConfig): IAxiosPromise
+  request<T=any>(config: IAxiosRequestConfig): IAxiosPromise<T>
+  get<T=any>(url: string, config?: IAxiosRequestConfig): IAxiosPromise<T>
+  delete<T=any>(url: string, config?: IAxiosRequestConfig): IAxiosPromise<T>
+  head<T=any>(url: string, config?: IAxiosRequestConfig): IAxiosPromise<T>
+  options<T=any>(url: string, config?: IAxiosRequestConfig): IAxiosPromise<T>
+  post<T=any>(url: string, data?: any, config?: IAxiosRequestConfig): IAxiosPromise<T>
+  put<T=any>(url: string, data?: any, config?: IAxiosRequestConfig): IAxiosPromise<T>
+  patch<T=any>(url: string, data?: any, config?: IAxiosRequestConfig): IAxiosPromise<T>
 }
 
 // 混合类型接口，其本身就是一个函数
 export interface IAxiosInstance extends IAxios {
-  (config: IAxiosRequestConfig): IAxiosPromise
+  <T=any>(config: IAxiosRequestConfig): IAxiosPromise<T>
 
-  (url: string, config?: IAxiosRequestConfig): IAxiosPromise
+  <T=any>(url: string, config?: IAxiosRequestConfig): IAxiosPromise<T>
 }
