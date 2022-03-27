@@ -17,3 +17,16 @@ export function isObject(val: any): val is Object {
 export function isPlainObject(val: any): val is Object {
   return toString.call(val) === '[object Object]'
 }
+
+export function extend<T, U>(to: T, from: U): T & U {
+  for (const key in from) {
+    /**
+     * (to as T & U)---->因为to是最终的合并项，函数需要将to返回出去，因此它得是T & U 类型-->将to断言为 T & U 类型
+     * 括号前面需要加个分号 ;
+     * from[key] as any 因为无法将U类型赋值给T & U的类型
+     */
+    ;(to as T & U)[key] = from[key] as any
+  }
+
+  return to as T & U
+}

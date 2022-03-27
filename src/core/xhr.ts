@@ -1,6 +1,6 @@
-import { parseHeaders } from "./helpers/headers";
-import { IAxiosRequestConfig, IAxiosPromise, IAxiosResponse } from "./types";
-import { createError } from "./helpers/error";
+import { parseHeaders } from "../helpers/headers";
+import { IAxiosRequestConfig, IAxiosPromise, IAxiosResponse } from "../types";
+import { createError } from "../helpers/error";
 
 export default function xhr(config: IAxiosRequestConfig): IAxiosPromise {
   return new Promise((resolve, reject) => {
@@ -24,7 +24,7 @@ export default function xhr(config: IAxiosRequestConfig): IAxiosPromise {
     }
 
     // true设置异步
-    request.open(method.toUpperCase(), url, true);
+    request.open(method.toUpperCase(), url!, true);
 
     // ajax原生事件
     request.onreadystatechange = function () {
