@@ -60,4 +60,6 @@ export interface IAxios {
 // 混合类型接口，其本身就是一个函数
 export interface IAxiosInstance extends IAxios {
   (config: IAxiosRequestConfig): IAxiosPromise
+
+  (url: string, config?: IAxiosRequestConfig): IAxiosPromise
 }

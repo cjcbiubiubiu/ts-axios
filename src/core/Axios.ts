@@ -4,7 +4,17 @@ import { IAxiosRequestConfig, IAxiosPromise, Method } from "../types";
 import dispatchRequest from "./dispatchRequest";
 
 export default class Axios {
-  request(config: IAxiosRequestConfig): IAxiosPromise {
+  request(url: any, config: any): IAxiosPromise {
+    if (typeof url === "string") {
+      if (!config) {
+        config = {};
+      }
+      config.url = url;
+    } else {
+      // 即意味着第一个传参就是config，所以将第一个传参赋值给第二个传参
+      config = url;
+    }
+
     return dispatchRequest(config);
   }
 
@@ -43,10 +53,11 @@ export default class Axios {
     config?: IAxiosRequestConfig
   ): IAxiosPromise {
     return this.request(
+      url,
       Object.assign(config || {}, {
         method,
         url,
-        data
+        data,
       })
     );
   }
