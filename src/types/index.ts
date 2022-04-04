@@ -48,6 +48,11 @@ export interface IAxiosError extends Error {
 }
 
 export interface IAxios {
+  interceptors: {
+    request: IAxiosInterceptorManager<IAxiosRequestConfig>,
+    response: IAxiosInterceptorManager<IAxiosResponse>
+  }
+
   request<T=any>(config: IAxiosRequestConfig): IAxiosPromise<T>
   get<T=any>(url: string, config?: IAxiosRequestConfig): IAxiosPromise<T>
   delete<T=any>(url: string, config?: IAxiosRequestConfig): IAxiosPromise<T>
@@ -63,4 +68,19 @@ export interface IAxiosInstance extends IAxios {
   <T=any>(config: IAxiosRequestConfig): IAxiosPromise<T>
 
   <T=any>(url: string, config?: IAxiosRequestConfig): IAxiosPromise<T>
+}
+
+export interface IAxiosInterceptorManager<T> {
+  use(resolved: IResolvedFn<T>, rejected?: IRejectedFn): number
+
+  // 根据id删除拦截器
+  eject(id: number): void
+}
+
+export interface IResolvedFn<T> {
+  (val: T): T | Promise<T>
+}
+
+export interface IRejectedFn {
+  (error: any): any
 }

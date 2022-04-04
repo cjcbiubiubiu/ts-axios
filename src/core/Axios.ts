@@ -1,9 +1,36 @@
 // 表示是一个类，因此文件名开头为大写
 
-import { IAxiosRequestConfig, IAxiosPromise, Method } from "../types";
+import {
+  IAxiosRequestConfig,
+  IAxiosResponse,
+  IAxiosPromise,
+  Method,
+  IResolvedFn,
+  IRejectedFn,
+} from "../types";
 import dispatchRequest from "./dispatchRequest";
+import InterceptorManager from "./interceptorManager";
+
+interface IInterceptors {
+  request: InterceptorManager<IAxiosRequestConfig>;
+  response: InterceptorManager<IAxiosResponse>;
+}
+
+interface IPromiseChain<T> {
+  resolved: IResolvedFn<T> | ((config: IAxiosRequestConfig) => IAxiosPromise);
+  rejected?: IRejectedFn;
+}
 
 export default class Axios {
+  interceptors: IInterceptors;
+
+  constructor() {
+    this.interceptors = {
+      request: new InterceptorManager<IAxiosRequestConfig>(),
+      response: new InterceptorManager<IAxiosResponse>(),
+    };
+  }
+
   request(url: any, config: any): IAxiosPromise {
     if (typeof url === "string") {
       if (!config) {
@@ -15,7 +42,33 @@ export default class Axios {
       config = url;
     }
 
-    return dispatchRequest(config);
+    // 增加拦截器的链式调用
+    const chain: IPromiseChain<any>[] = [
+      {
+        resolved: dispatchRequest,
+        rejected: undefined,
+      },
+    ];
+
+    this.interceptors.request.forEach((interceptor) => {
+      // 因为它是先添加的 后面才执行，所以使用unshift
+      chain.unshift(interceptor);
+    });
+
+    this.interceptors.response.forEach((interceptor) => {
+      chain.push(interceptor);
+    });
+
+    let promise = Promise.resolve(config);
+
+    // 实现链式调用
+    while (chain.length) {
+      // ! 当不为空的时候才从里获取参数
+      const { resolved, rejected } = chain.shift()!;
+      promise = promise.then(resolved, rejected)
+    }
+
+    return promise
   }
 
   get(url: string, config?: IAxiosRequestConfig): IAxiosPromise {
